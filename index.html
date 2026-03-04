@@ -5,11 +5,6 @@
         <link rel="icon" href="https://github.com/dm-portfolio/dm-portfolio.github.io/blob/main/resources/video/Icon.png?raw=true">
         <link rel="stylesheet" href="styles.css">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="https://github.com/dm-portfolio/dm-portfolio.github.io/blob/main/server.js?raw=true"></script>
-        <style>
-            .user { color: blue; }
-            .bot { color: green; }
-        </style>
     </head>
     <body bgcolor="#6B6B6B" bgproperties="fixed">
         <div class="browser-window">
@@ -92,31 +87,37 @@
 
             
             <div id="projects" class="tab-content">
-                <input type="text" id="message" placeholder="Type a message..." />
-                <button onclick="sendMessage()">Send</button>
-                    
+                
+                <input id="input" placeholder="Type..." />
+                <button onclick="send()">Send</button>
+                
                 <script>
-                    async function sendMessage() {
-                        const input = document.getElementById("message");
-                        const chat = document.getElementById("chat");
-                        const message = input.value;
-                    
-                        if (!message) return;
-                    
-                        chat.innerHTML += `<div class="user"><b>You:</b> ${message}</div>`;
-                    
-                        const response = await fetch("http://localhost:3000/chat", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ message })
-                        });
-                    
-                        const data = await response.json();
-                    
-                        chat.innerHTML += `<div class="bot"><b>Bot:</b> ${data.reply}</div>`;
-                        input.value = "";
-                        chat.scrollTop = chat.scrollHeight;
-                    }
+                
+                async function send() {
+                  const input = document.getElementById("input");
+                  const chat = document.getElementById("chat");
+                  const message = input.value;
+                
+                  chat.innerHTML += `<div><b>You:</b> ${message}</div>`;
+                  input.value = "";
+                
+                  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                      "Authorization": `Bearer ${API_KEY}`,
+                      "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                      model: "llama-3.3-70b-versatile",
+                      messages: [{ role: "user", content: message }]
+                    })
+                  });
+                
+                  const data = await res.json();
+                  const reply = data.choices[0].message.content;
+                
+                  chat.innerHTML += `<div><b>Bot:</b> ${reply}</div>`;
+                }
                 </script>
             </div>
 
