@@ -19,3 +19,49 @@ All code is made by me, a less-than-average programmer, probably with some help 
 **2.27.26** **-** Day 4. Love my website so far, but I need to figure out mobile support. Overall super proud of myself for making my childhood dream come true <3.
 
 **3.1.26** **-** Happy march! haven't been feeling too well so I took a break, also because there was nothing really to change. I added an inset to the "Fun" tab, changed the structure of the code too. I also found out how to use codespaces recently! I added an extension that lets me live preview my changes, so that's nice. And I added back the pirate widget! Long live Lazytown <3.
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Chatbot</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: auto; }
+        #chat { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; }
+        .user { color: blue; }
+        .bot { color: green; }
+    </style>
+</head>
+<body>
+
+<h2>Chatbot</h2>
+<div id="chat"></div>
+
+<input type="text" id="message" placeholder="Type a message..." />
+<button onclick="sendMessage()">Send</button>
+
+<script>
+async function sendMessage() {
+    const input = document.getElementById("message");
+    const chat = document.getElementById("chat");
+    const message = input.value;
+
+    if (!message) return;
+
+    chat.innerHTML += `<div class="user"><b>You:</b> ${message}</div>`;
+
+    const response = await fetch("http://localhost:3000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message })
+    });
+
+    const data = await response.json();
+
+    chat.innerHTML += `<div class="bot"><b>Bot:</b> ${data.reply}</div>`;
+    input.value = "";
+    chat.scrollTop = chat.scrollHeight;
+}
+</script>
+
+</body>
+</html>
